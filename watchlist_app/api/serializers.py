@@ -3,11 +3,18 @@ from watchlist_app.models import Movie
 
 
 class MovieSerializer(serializers.ModelSerializer):
+    # Thêm các trường custom để tính toán và response client
+    name_len = serializers.SerializerMethodField()
+
     class Meta:
         model = Movie
         fields = '__all__'
         # fields = ['id', 'name', 'description']
         # exclude = ['active']
+
+    # Định nghĩa Method cho custom field:
+    def get_name_len(self, obj):
+        return len(obj.name)
 
     def validate_name(self, value):
         if len(value) < 2:
