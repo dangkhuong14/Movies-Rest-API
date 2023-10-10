@@ -9,14 +9,29 @@ from watchlist_app.models import WatchList, StreamPlatform, Review
 from watchlist_app.api.serializers import WatchListSerializer, StreamPlatformSerializer, ReviewSerializer
 
 
-class ReviewList(generics.ListCreateAPIView):
-    queryset = Review.objects.all()
+class ReviewList(generics.ListAPIView):
     serializer_class = ReviewSerializer
 
+    # Override GenericAPIView class method
+    def get_queryset(self):
+        pk_watch = self.kwargs['pk']
+        return Review.objects.filter(watchlist=pk_watch)
 
-class ReviewDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Review.objects.all()
+
+class ReviewCreate(generics.CreateAPIView):
     serializer_class = ReviewSerializer
+
+    # Override method of mixins.CreateModelMixin class
+    def perform_create(self, serializer):
+        pk_watch = self.kwargs['pk']
+        watch_instance = WatchList.objects.get(pk=pk_watch)
+        # Customize field cu the trong Response sau khi calculate (calculate watchlist tu pk)
+        serializer.save(watchlist=watch_instance)
+
+
+# class ReviewDetail(generics.RetrieveUpdateDestroyAPIView):
+#     queryset = Review.objects.all()
+#     serializer_class = ReviewSerializer
 
 
 # class ReviewList(mixins.ListModelMixin,
