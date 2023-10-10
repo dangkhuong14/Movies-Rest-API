@@ -25,7 +25,8 @@ class ReviewCreate(generics.CreateAPIView):
     def perform_create(self, serializer):
         pk_watch = self.kwargs['pk']
         watch_instance = WatchList.objects.get(pk=pk_watch)
-        # Customize field cu the trong Response sau khi calculate (calculate watchlist tu pk)
+        # Any additional keyword arguments will be included in
+        # the validated_data argument when .create() or .update() (method of serializers.Serialize class) are called.
         serializer.save(watchlist=watch_instance)
 
 
