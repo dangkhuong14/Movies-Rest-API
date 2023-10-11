@@ -3,10 +3,17 @@ from watchlist_app.models import WatchList, StreamPlatform, Review
 
 
 class ReviewSerializer(serializers.ModelSerializer):
+    # source là core argument dùng để populate giá trị của serializer field
+    # Khai báo ReadOnlyField cho field watchlist của Review là vì:
+    # không cho phép người dùng thay đổi nội dung và không yêu cầu nhập
+    # field này khi request
+    watchlist = serializers.ReadOnlyField(
+        source='watchlist.pk', required=False)
+
     class Meta:
         model = Review
-        # fields = '__all__'
-        exclude = ('watchlist',)
+        fields = '__all__'
+        # exclude = ('watchlist',)
 
 
 class WatchListSerializer(serializers.ModelSerializer):
