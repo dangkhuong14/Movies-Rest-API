@@ -30,9 +30,9 @@ class ReviewCreate(generics.CreateAPIView):
         serializer.save(watchlist=watch_instance)
 
 
-# class ReviewDetail(generics.RetrieveUpdateDestroyAPIView):
-#     queryset = Review.objects.all()
-#     serializer_class = ReviewSerializer
+class ReviewDetail(generics.RetrieveAPIView):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
 
 
 # class ReviewList(mixins.ListModelMixin,
