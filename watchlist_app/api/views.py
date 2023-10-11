@@ -13,8 +13,15 @@ from watchlist_app.api.serializers import WatchListSerializer, StreamPlatformSer
 
 class ReviewList(generics.ListAPIView):
     serializer_class = ReviewSerializer
+    """
+        Thay đổi thuộc tính queryset của GenericAPIView class
+        Không thay đổi trực tiếp trên thuộc tính queryset của lớp GenericAPIView vì:
+        Tập dữ liệu queryset này là cố định và không thay đổi theo yêu cầu của request.
+        Do đó cần sử dụng hàm get_queryset() của lớp GenericAPIView. 
+        Hàm get_queryset() sẽ được gọi mỗi khi có request đến viewset. Hàm này có thể được sử dụng để lấy tập dữ liệu
+        tùy chỉnh dựa trên yêu cầu của request.
+    """
 
-    # Override GenericAPIView class method
     def get_queryset(self):
         pk_watch = self.kwargs['pk']
         return Review.objects.filter(watchlist=pk_watch)
@@ -23,7 +30,7 @@ class ReviewList(generics.ListAPIView):
 class ReviewCreate(generics.CreateAPIView):
     serializer_class = ReviewSerializer
 
-    # Override method of mixins.CreateModelMixin class
+    # Hàm perform_create được gọi trong action method của mixins.CreateModelMixin class
     def perform_create(self, serializer):
         pk_watch = self.kwargs['pk']
         watch_instance = WatchList.objects.get(pk=pk_watch)
@@ -36,20 +43,43 @@ class ReviewDetail(generics.RetrieveAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
 
-# Simple view set for retrieving and listing StreamPlatform
+
+"""
+            viewsets.ModelViewSet(mixins.CreateModelMixin,
+                   mixins.RetrieveModelMixin,
+                   mixins.UpdateModelMixin,
+                   mixins.DestroyModelMixin,
+                   mixins.ListModelMixin,
+                   GenericViewSet(ViewSetMixin, generics.GenericAPIView)) sử dụng actions của mixins mapping thành method handlers
+"""
 
 
-class StreamPlatformVS(viewsets.ViewSet):
-    def list(self, request):
-        queryset = StreamPlatform.objects.all()
-        serializer = StreamPlatformSerializer(queryset, many=True)
-        return Response(serializer.data)
+class StreamPlatformVS(viewsets.ModelViewSet):
+    queryset = StreamPlatform.objects.all()
+    serializer_class = StreamPlatformSerializer
 
-    def retrieve(self, request, pk=None):
-        queryset = StreamPlatform.objects.all()
-        platform = get_object_or_404(queryset, pk=pk)
-        serializer = StreamPlatformSerializer(platform)
-        return Response(serializer.data)
+# class viewsets.ViewSet(ViewSetMixin, views.APIView) chỉ mapping method -> action (Post->create)
+# Khai báo hàm action mapping-> thành khai báo method
+
+# class StreamPlatformVS(viewsets.ViewSet):
+#     def list(self, request):
+#         queryset = StreamPlatform.objects.all()
+#         serializer = StreamPlatformSerializer(queryset, many=True)
+#         return Response(serializer.data)
+
+#     def retrieve(self, request, pk=None):
+#         queryset = StreamPlatform.objects.all()
+#         platform = get_object_or_404(queryset, pk=pk)
+#         serializer = StreamPlatformSerializer(platform)
+#         return Response(serializer.data)
+
+#     def create(self, request):
+#         serializer = StreamPlatformSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data)
+#         else:
+#             return Response(serializer.errors)
 
 
 # class ReviewList(mixins.ListModelMixin,
