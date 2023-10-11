@@ -1,5 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework import status, mixins, generics
+from rest_framework import viewsets
+from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 # from rest_framework.decorators import api_view
 # from django.shortcuts import render
@@ -33,6 +35,21 @@ class ReviewCreate(generics.CreateAPIView):
 class ReviewDetail(generics.RetrieveAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
+
+# Simple view set for retrieving and listing StreamPlatform
+
+
+class StreamPlatformVS(viewsets.ViewSet):
+    def list(self, request):
+        queryset = StreamPlatform.objects.all()
+        serializer = StreamPlatformSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def retrieve(self, request, pk=None):
+        queryset = StreamPlatform.objects.all()
+        platform = get_object_or_404(queryset, pk=pk)
+        serializer = StreamPlatformSerializer(platform)
+        return Response(serializer.data)
 
 
 # class ReviewList(mixins.ListModelMixin,
