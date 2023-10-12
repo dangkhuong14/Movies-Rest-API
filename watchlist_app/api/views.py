@@ -34,7 +34,9 @@ class ReviewCreate(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
     # Thêm thuộc tính queryset là vì trong class đang dùng filter() hoặc get() của model Review
     serializer_class = ReviewSerializer
-    queryset = Review.objects.all()
+
+    def get_queryset(self):
+        return Review.objects.filter(watchlist=self.kwargs['pk'])
 
     # Hàm perform_create được gọi trong action method của mixins.CreateModelMixin class
     def perform_create(self, serializer):
@@ -49,6 +51,17 @@ class ReviewCreate(generics.CreateAPIView):
         if review_queryset.exists():
             raise ValidationError(
                 "You've already reviewed this watching content")
+
+        # Tinh toan lai rating cho watchlist sau khi review moi duoc them vao
+        if watch_instance.num_ratings == 0:
+            watch_instance.avg_rating = serializer.validated_data['rating']
+        else:
+            # Can sua lai logic
+            watch_instance.avg_rating = (
+                watch_instance.avg_rating + serializer.validated_data['rating'])/2
+
+        watch_instance.num_ratings += 1
+        watch_instance.save()
 
         # Any additional keyword arguments will be included in
         # the validated_data argument when .create() or .update() (method of serializers.Serialize class) are called.
