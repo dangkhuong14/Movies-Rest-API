@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework import status, mixins, generics
 from rest_framework import viewsets
+from rest_framework.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 # from rest_framework.decorators import api_view
@@ -28,15 +29,27 @@ class ReviewList(generics.ListAPIView):
 
 
 class ReviewCreate(generics.CreateAPIView):
+    # Thêm thuộc tính queryset là vì trong class đang dùng filter() hoặc get() của model Review
     serializer_class = ReviewSerializer
+    queryset = Review.objects.all()
 
     # Hàm perform_create được gọi trong action method của mixins.CreateModelMixin class
     def perform_create(self, serializer):
         pk_watch = self.kwargs['pk']
         watch_instance = WatchList.objects.get(pk=pk_watch)
+
+        # Kiem tra User hien tai co tao review doi voi movie nay chua
+        current_user = self.request.user
+        review_queryset = Review.objects.filter(
+            review_user=current_user, watchlist=watch_instance)
+
+        if review_queryset.exists():
+            raise ValidationError(
+                "You've already reviewed this watching content")
+
         # Any additional keyword arguments will be included in
         # the validated_data argument when .create() or .update() (method of serializers.Serialize class) are called.
-        serializer.save(watchlist=watch_instance)
+        serializer.save(watchlist=watch_instance, review_user=current_user)
 
 
 class ReviewDetail(generics.RetrieveAPIView):

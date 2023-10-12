@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'watchlist_app',
     'rest_framework',
     'dotenv',
+    'django_extensions'
 ]
 
 MIDDLEWARE = [

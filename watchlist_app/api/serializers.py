@@ -7,8 +7,18 @@ class ReviewSerializer(serializers.ModelSerializer):
     # Khai báo ReadOnlyField cho field watchlist của Review là vì:
     # không cho phép người dùng thay đổi nội dung và không yêu cầu nhập
     # field này khi request
-    watchlist = serializers.ReadOnlyField(
-        source='watchlist.pk', required=False)
+    # watchlist = serializers.ReadOnlyField(
+    #     source='watchlist.pk', required=False)
+
+    # source argument dùng để khai báo giá trị custom cho field
+    watchlist = serializers.StringRelatedField(
+        read_only=True, required=False, source='watchlist.pk')
+
+    # Không khai báo review_user field cho serializer class cũng được
+    # nhưng kết quả trả về sẽ là PK của instance User
+    # Không thêm tham số source cũng được kết quả vẫn là user name (__str__ của user model)
+    review_user = serializers.StringRelatedField(
+        read_only=True, required=False, source='review_user.username')
 
     class Meta:
         model = Review
