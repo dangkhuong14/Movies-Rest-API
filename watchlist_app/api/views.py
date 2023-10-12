@@ -4,6 +4,7 @@ from rest_framework import viewsets
 from rest_framework.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 # from rest_framework.decorators import api_view
 # from django.shortcuts import render
 # from django.http import JsonResponse
@@ -29,6 +30,7 @@ class ReviewList(generics.ListAPIView):
 
 
 class ReviewCreate(generics.CreateAPIView):
+    permission_classes = [IsAuthenticated]
     # Thêm thuộc tính queryset là vì trong class đang dùng filter() hoặc get() của model Review
     serializer_class = ReviewSerializer
     queryset = Review.objects.all()
@@ -52,7 +54,8 @@ class ReviewCreate(generics.CreateAPIView):
         serializer.save(watchlist=watch_instance, review_user=current_user)
 
 
-class ReviewDetail(generics.RetrieveAPIView):
+class ReviewDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
 
