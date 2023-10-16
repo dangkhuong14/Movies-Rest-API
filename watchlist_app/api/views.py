@@ -15,6 +15,7 @@ from watchlist_app.api.serializers import WatchListSerializer, StreamPlatformSer
 
 
 class ReviewList(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
     serializer_class = ReviewSerializer
     """
         Thay đổi thuộc tính queryset của GenericAPIView class
