@@ -21,7 +21,3 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('watch/', include('watchlist_app.api.urls')),
 ]
-
-urlpatterns += [
-    path('api-auth/', include('rest_framework.urls')),
-]

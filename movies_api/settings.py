@@ -44,7 +44,9 @@ INSTALLED_APPS = [
     'watchlist_app',
     'rest_framework',
     'dotenv',
-    'django_extensions'
+    'django_extensions',
+    'rest_framework.authtoken',
+    'user_app'
 ]
 
 MIDDLEWARE = [
@@ -145,6 +147,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
     ]
 }
